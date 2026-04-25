@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  xau-system:
+    build: .
+    container_name: xau-system
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./runtime:/app/runtime
+    command: ["/bin/bash", "/app/start_live.sh"]

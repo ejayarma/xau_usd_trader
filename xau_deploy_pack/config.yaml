@@ -1,0 +1,74 @@
+app:
+  name: xau-system-v23
+  timezone: UTC
+  log_level: INFO
+
+runtime:
+  trading_enabled: false
+  bot_mode: alerts_only   # alerts_only | semi_auto | full_auto
+  broker_mode: paper      # paper | oanda
+  tp_variant: A           # A | B | C
+  persist_state: true
+
+instrument:
+  symbol: XAU_USD
+  quote_convention: oanda_raw_points
+
+risk:
+  nominal_risk_per_trade: 0.01
+  daily_loss_limit: 0.02
+  weekly_loss_limit: 0.06
+  enforce_tier_caps: true
+
+sessions:
+  main_start_utc: "06:00"
+  main_end_utc: "17:00"
+  asia_start_utc: "22:00"
+  asia_end_utc: "06:00"
+  dead_zone_start_utc: "17:00"
+  dead_zone_end_utc: "22:00"
+  friday_cutoff_utc: "15:00"
+
+regime:
+  adx_strong_trend_min: 25
+  adx_weak_trend_min: 20
+  adx_range_max: 20
+  range_lookback_h1_candles: 20
+  range_atr_multiplier: 2.0
+
+levels:
+  entry_zone_points_min: 30
+  entry_zone_atr_fraction: 0.25
+  stop_buffer_points_min: 150
+  stop_buffer_atr_fraction: 0.30
+  trail_points_min: 350
+  trail_atr_fraction: 0.50
+  volatility_shock_atr_multiplier: 2.0
+  volatility_freeze_minutes: 45
+
+spread:
+  clean_max_points: 900
+  acceptable_max_points: 1000
+  block_new_entries_above_points: 1000
+  hard_warning_above_points: 1200
+  hard_block_above_points: 1500
+
+news:
+  tier1_block_before_minutes: 30
+  tier1_block_after_minutes: 45
+  tier2_block_before_minutes: 15
+  tier2_block_after_minutes: 30
+  nfp_block_start_utc: "13:00"
+  nfp_block_end_utc: "14:15"
+
+alerts:
+  telegram_enabled: true
+  send_health_alerts: true
+  send_signal_alerts: true
+  send_execution_alerts: true
+  send_lockout_alerts: true
+
+storage:
+  database_url: sqlite:///./data/journal.sqlite3
+  healthcheck_file: ./runtime/healthcheck.json
+  logs_dir: ./runtime/logs

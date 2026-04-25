@@ -1,0 +1,25 @@
+[Unit]
+Description=XAU USD Trading System v2.3
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/xau-system
+EnvironmentFile=/opt/xau-system/.env
+ExecStart=/opt/xau-system/start_live.sh
+Restart=always
+RestartSec=5
+StandardOutput=append:/opt/xau-system/runtime/logs/systemd.out.log
+StandardError=append:/opt/xau-system/runtime/logs/systemd.err.log
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+
+[Install]
+WantedBy=multi-user.target
