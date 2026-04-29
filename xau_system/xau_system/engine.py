@@ -23,14 +23,18 @@ class TradingEngine:
     journal: Journal = field(default_factory=Journal)
     alerts: AlertManager = field(default_factory=AlertManager)
     broker: Broker = field(default_factory=PaperBroker)
+    risk: RiskManager = field(init=False)
+    rule_engine: RuleEngine = field(init=False)
+    level_detector: LevelDetector = field(init=False)
+    account: AccountState = field(init=False)
+    positions: dict[str, Position] = field(default_factory=dict, init=False)
+    freeze_until: datetime | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         self.risk = RiskManager(self.config, DEFAULT_TIERS)
         self.rule_engine = RuleEngine(self.config, self.risk)
         self.level_detector = LevelDetector(self.config)
         self.account = AccountState(balance=1000.0, equity=1000.0)
-        self.positions: dict[str, Position] = {}
-        self.freeze_until: datetime | None = None
 
     def prepare_frames(self, m15: pd.DataFrame, h1: pd.DataFrame, d1: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         return add_common_indicators(m15), add_common_indicators(h1), add_common_indicators(d1)
@@ -44,8 +48,9 @@ class TradingEngine:
             return []
         regime = self.rule_engine.market_regime(h1, d1, m15)
         if regime.volatility_shock:
-            self.freeze_until = now + timedelta(minutes=self.config.volatility_freeze_minutes)
-            self.alerts.send(f"VOLATILITY_SHOCK_DETECTED at {now.isoformat()} — new entries frozen until {self.freeze_until.isoformat()}")
+            freeze_until = now + timedelta(minutes=self.config.volatility_freeze_minutes)
+            self.freeze_until = freeze_until
+            self.alerts.send(f"VOLATILITY_SHOCK_DETECTED at {now.isoformat()} — new entries frozen until {freeze_until.isoformat()}")
             return []
         spread_points = int(m15["spread_points"].iloc[-1]) if "spread_points" in m15.columns else 500
         ctx = RuleContext(m15=m15, h1=h1, d1=d1, spread_points=spread_points, now=now, levels=levels, account=self.account, events=events)
