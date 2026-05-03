@@ -1,4 +1,4 @@
-# XAU/USD Trading System (v2.3 implementation scaffold)
+****# XAU/USD Trading System (v2.3 implementation scaffold)
 
 This project implements the **core logic** of the uploaded XAU/USD Trading System v2.3 specification:
 
